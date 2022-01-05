@@ -3,6 +3,7 @@
 // load modules
 const express = require('express');
 const morgan = require('morgan');
+const routes = require('./routes');
 
 const { sequelize } = require('./models');
 
@@ -21,6 +22,8 @@ app.get('/', (req, res) => {
     message: 'Welcome to the REST API project!',
   });
 });
+
+app.use('/api'. routes);
 
 (async () => {
   try {
