@@ -5,21 +5,30 @@ const bcrypt = require('bcrypt');
 const sequelize = require("sequelize");
 
 module.exports = (sequelize) => {
-    class User extends Model {}
+    class Course extends Model {}
     User.init({
-        firstName: {
+        title: {
             type: DataTypes.STRING,
         },
-        lastName: {
+        description: {
             type: DataTypes.STRING,
         },
-        emailAddress: {
+        estimatedTime: {
             type: DataTypes.STRING,
         },
-        password: {
+        materialsNeeded: {
             type: DataTypes.STRING,
         },
     }, { sequelize });
 
-    return User;
-}
+    Course.associate = (models) => {
+        Course.belongsTo(models.User, {
+            foreignKey: {
+               fieldName: 'userId',
+               allowNull: false, 
+            }
+        })
+    }
+
+    return Course;
+};

@@ -5,24 +5,28 @@ const bcrypt = require('bcrypt');
 const sequelize = require("sequelize");
 
 module.exports = (sequelize) => {
-    class Courses extends Model {}
+    class User extends Model {}
     User.init({
-        title: {
+        firstName: {
             type: DataTypes.STRING,
         },
-        description: {
+        lastName: {
             type: DataTypes.STRING,
         },
-        estimatedTime: {
+        emailAddress: {
             type: DataTypes.STRING,
         },
-        materialsNeeded: {
+        password: {
             type: DataTypes.STRING,
-        },
-        userId: {
-
         },
     }, { sequelize });
 
-    return Courses;
-};
+    User.associate = (models) => {
+        User.hasMany(models.Course, {
+            foreignKey: 'userId',
+            allowNull: false,
+        })
+    }
+
+    return User;
+}
