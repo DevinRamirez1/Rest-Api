@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { sequelize, models } = require('./models');
-const { User, Course} = models;
+const { User, Course} = require('./models');
 
 function asyncHandler(cb) {
     return async (req, res, next) => {
@@ -12,6 +11,27 @@ function asyncHandler(cb) {
         }
     }
 }
+
+router.get('/users', asyncHandler( async(req, res) => {
+    let users = await User.findAll();
+    res.status(200).json(users);
+}));
+
+router.post('/users', asyncHandler( async(req, res) => {
+    try {
+        await User.create(req.body);
+        res.status(201).json({ message: "User created successfully!" });
+    } catch (error) {
+        console.log('ERROR: ', error.name);
+
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+            const errors = error.errors.map(err => err.message);
+            res.status(400).json({ errors });
+        } else {
+            throw error;
+        }
+    }
+}));
 
 router.get('/courses', asyncHandler( async(req, res) => {
     let courses = await Course.findAll();
