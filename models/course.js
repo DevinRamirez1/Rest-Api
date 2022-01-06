@@ -1,12 +1,12 @@
 'use strict';
 
-const { Model, DataTypes } = require("sequelize/dist");
+const { Model, DataTypes } = require("sequelize");
 const bcrypt = require('bcrypt');
 const sequelize = require("sequelize");
 
 module.exports = (sequelize) => {
     class Course extends Model {}
-    User.init({
+    Course.init({
         title: {
             type: DataTypes.STRING,
         },
