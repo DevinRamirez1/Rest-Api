@@ -4,6 +4,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const routes = require('./routes');
+const Sequelize = require('sequelize');
 
 const { sequelize } = require('./models');
 
@@ -15,6 +16,7 @@ const app = express();
 
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
+app.use(express.json());
 
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
@@ -23,7 +25,7 @@ app.get('/', (req, res) => {
   });
 });
 
-app.use('/api'. routes);
+app.use('/api', routes);
 
 (async () => {
   try {
