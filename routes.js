@@ -1,8 +1,10 @@
+
 const express = require('express');
 const router = express.Router();
 const { User, Course} = require('./models');
 const { authenticateUser } = require('./middleware/auth-user');
 
+//Asynchandler function
 function asyncHandler(cb) {
     return async (req, res, next) => {
         try{
@@ -13,6 +15,7 @@ function asyncHandler(cb) {
     }
 }
 
+//Retrieves requested user with authentication
 router.get('/users', authenticateUser, asyncHandler( async(req, res) => {
     const user = req.currentUser
     res.status(200).json({
@@ -22,6 +25,7 @@ router.get('/users', authenticateUser, asyncHandler( async(req, res) => {
     });
 }));
 
+//Creates a new User
 router.post('/users', asyncHandler( async(req, res) => {
     try {
         await User.create(req.body);
@@ -38,6 +42,7 @@ router.post('/users', asyncHandler( async(req, res) => {
     }
 }));
 
+//Retrieves requested courses with proper filters
 router.get('/courses', asyncHandler( async(req, res) => {
     const courses = await Course.findAll({
         attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -51,6 +56,7 @@ router.get('/courses', asyncHandler( async(req, res) => {
     res.status(200).json(courses);
 }));
 
+//Retrieves specific course with proper filters
 router.get('/courses:id', asyncHandler( async(req, res) => {
     const course = await Course.getCourse(req.params.id, {
         attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -69,6 +75,7 @@ router.get('/courses:id', asyncHandler( async(req, res) => {
     }
 }));
 
+//Creates new course with proper authentication
 router.post('/courses', authenticateUser, asyncHandler( async(req, res) => {
     try {
         await Course.create(req.body);
@@ -85,6 +92,7 @@ router.post('/courses', authenticateUser, asyncHandler( async(req, res) => {
     }
 }));
 
+//Updates course with proper authentication
 router.put('/courses:id', authenticateUser, asyncHandler( async(req, res) => {
     try{
         const user = req.currentUser;
@@ -106,6 +114,7 @@ router.put('/courses:id', authenticateUser, asyncHandler( async(req, res) => {
     }
 }));
 
+//Delets course with proper authentication
 router.delete('/courses:id', authenticateUser, asyncHandler( async(req, res) => {
     const user = req.currentUser;
     const course = await Course.getCourse(req.params.id);
