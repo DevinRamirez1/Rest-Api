@@ -4,6 +4,7 @@ const { Model, DataTypes } = require("sequelize");
 const bcrypt = require('bcrypt');
 const sequelize = require("sequelize");
 
+//Model layout
 module.exports = (sequelize) => {
     class Course extends Model {}
     Course.init({
@@ -21,6 +22,7 @@ module.exports = (sequelize) => {
         },
     }, { sequelize });
 
+    //Creates association with User model
     Course.associate = (models) => {
         Course.belongsTo(models.User, {
             foreignKey: {

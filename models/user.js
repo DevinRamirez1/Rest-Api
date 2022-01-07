@@ -4,6 +4,7 @@ const { Model, DataTypes } = require("sequelize");
 const bcrypt = require('bcrypt');
 const sequelize = require("sequelize");
 
+//Creates model
 module.exports = (sequelize) => {
     class User extends Model {}
     User.init({
@@ -66,6 +67,7 @@ module.exports = (sequelize) => {
         
     }, { sequelize });
 
+    //Creates association with course model
     User.associate = (models) => {
         User.hasMany(models.Course, {
             foreignKey: 'userId',
