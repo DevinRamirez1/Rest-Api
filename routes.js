@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User, Course} = require('./models');
+const { authenticateUser } = require('./middleware/auth-user');
 
 function asyncHandler(cb) {
     return async (req, res, next) => {
@@ -12,9 +13,13 @@ function asyncHandler(cb) {
     }
 }
 
-router.get('/users', asyncHandler( async(req, res) => {
-    let users = await User.findAll();
-    res.status(200).json(users);
+router.get('/users', authenticateUser, asyncHandler( async(req, res) => {
+    const user = req.currentUser
+    res.status(200).json({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailAddress: user.emailAddress
+    });
 }));
 
 router.post('/users', asyncHandler( async(req, res) => {
