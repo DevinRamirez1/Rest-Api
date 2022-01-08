@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { User, Course} = require('./models');
 const { authenticateUser } = require('./middleware/auth-user');
+const createError = require('http-errors');
 
 //Asynchandler function
 function asyncHandler(cb) {
@@ -29,7 +30,7 @@ router.get('/users', authenticateUser, asyncHandler( async(req, res) => {
 router.post('/users', asyncHandler( async(req, res) => {
     try {
         await User.create(req.body);
-        res.status(201).json({ message: "User created successfully!" });
+        res.status(201).json();
     } catch (error) {
         console.log('ERROR: ', error.name);
 
@@ -57,8 +58,8 @@ router.get('/courses', asyncHandler( async(req, res) => {
 }));
 
 //Retrieves specific course with proper filters
-router.get('/courses:id', asyncHandler( async(req, res) => {
-    const course = await Course.getCourse(req.params.id, {
+router.get('/courses/:id', asyncHandler( async(req, res) => {
+    const course = await Course.findByPk(req.params.id, {
         attributes: { exclude: ["createdAt", "updatedAt"] },
         include: [
             {
@@ -69,7 +70,7 @@ router.get('/courses:id', asyncHandler( async(req, res) => {
     });
 
     if (course) {
-        res.status(200),json(course)
+        res.status(200).json({course})
     } else {
         res.status(404).json({ message: "Course Not Found" });
     }
@@ -78,8 +79,8 @@ router.get('/courses:id', asyncHandler( async(req, res) => {
 //Creates new course with proper authentication
 router.post('/courses', authenticateUser, asyncHandler( async(req, res) => {
     try {
-        await Course.create(req.body);
-        res.status(201).json({ message: "Course created successfully!" });
+        const course = await Course.create(req.body);
+        res.status(201).location(`/api/courses/${course.id}`).end();
     } catch (error) {
         console.log('ERROR: ', error.name);
 
@@ -93,10 +94,10 @@ router.post('/courses', authenticateUser, asyncHandler( async(req, res) => {
 }));
 
 //Updates course with proper authentication
-router.put('/courses:id', authenticateUser, asyncHandler( async(req, res) => {
+router.put('/courses/:id', authenticateUser, asyncHandler( async(req, res, next) => {
     try{
         const user = req.currentUser;
-        const course = await Course.getCourse(req.params.id);
+        const course = await Course.findByPk(req.params.id);
         if (course && course.userId === user.id) {
             await course.update(req.body);
             res.status(204).end();
@@ -115,11 +116,11 @@ router.put('/courses:id', authenticateUser, asyncHandler( async(req, res) => {
 }));
 
 //Delets course with proper authentication
-router.delete('/courses:id', authenticateUser, asyncHandler( async(req, res) => {
+router.delete('/courses/:id', authenticateUser, asyncHandler( async(req, res, next) => {
     const user = req.currentUser;
-    const course = await Course.getCourse(req.params.id);
+    const course = await Course.findByPk(req.params.id);
         if (course && course.userId === user.id) {
-            await Course.deleteCourse(course);
+            await course.destroy();
             res.status(204).end();
         } else {
             const err = createError(403, "Looks like you do not own this course. Please try again.");
