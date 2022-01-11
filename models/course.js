@@ -25,10 +25,10 @@ module.exports = (sequelize) => {
             allowNull: false,
             validate: {
                 notNull: {
-                    msg: "A title is required."
+                    msg: "A description is required."
                 },
                 notEmpty: {
-                    msg: "A title is required."
+                    msg: "A description is required."
                 }
             }
         },
